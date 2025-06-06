@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achraf LIMEM - Portfolio Data & IA</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .data-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #3b82f6 50%, #60a5fa 75%, #93c5fd 100%);
+        }
+        
+        .data-gradient-light {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-hover:hover .visual-element {
+            transform: scale(1.05);
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        
+        .slide-up {
+            animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .typing-animation {
+            border-right: 3px solid #3b82f6;
+            animation: blink 1.2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { border-color: transparent; }
+            51%, 100% { border-color: #3b82f6; }
+        }
+        
+        .modal-backdrop {
+            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.6);
+        }
+        
+        .tag {
+            transition: all 0.3s ease;
+        }
+        
+        .tag:hover {
+            transform: scale(1.08);
+        }
+        
+        .data-pattern {
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.1) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .project-card {
+            height: 480px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .project-card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .project-description {
+            flex: 1;
+        }
+        
+        .visual-element {
+            transition: all 0.3s ease;
+        }
+        
+        .tech-icon {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-divider {
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            height: 1px;
+        }
+        
+        .chart-bar {
+            animation: growBar 1.5s ease-out;
+        }
+        
+        @keyframes growBar {
+            from { height: 0; }
+            to { height: var(--bar-height); }
+        }
+        
+        .workflow-node {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .data-flow {
+            animation: dataFlow 3s infinite;
+        }
+        
+        @keyframes dataFlow {
+            0% { stroke-dashoffset: 20; }
+            100% { stroke-dashoffset: 0; }
+        }
+        
+        .research-element {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .storytelling-section {
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Composants visuels pour chaque type de projet
+        const WorkflowVisual = () => (
+            <div className="visual-element w-full h-24 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-3 mb-4 border border-amber-200">
+                <svg viewBox="0 0 200 60" className="w-full h-full">
+                    <defs>
+                        <linearGradient id="workflowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#f59e0b" />
+                            <stop offset="100%" stopColor="#ea580c" />
+                        </linearGradient>
+                    </defs>
+                    
+                    {/* Workflow nodes */}
+                    <circle cx="20" cy="30" r="8" fill="url(#workflowGradient)" className="workflow-node" />
+                    <circle cx="70" cy="30" r="8" fill="url(#workflowGradient)" className="workflow-node" style={{animationDelay: '0.5s'}} />
+                    <circle cx="120" cy="30" r="8" fill="url(#workflowGradient)" className="workflow-node" style={{animationDelay: '1s'}} />
+                    <circle cx="170" cy="30" r="8" fill="url(#workflowGradient)" className="workflow-node" style={{animationDelay: '1.5s'}} />
+                    
+                    {/* Connecting lines */}
+                    <line x1="28" y1="30" x2="62" y2="30" stroke="#f59e0b" strokeWidth="2" strokeDasharray="5,5" className="data-flow" />
+                    <line x1="78" y1="30" x2="112" y2="30" stroke="#f59e0b" strokeWidth="2" strokeDasharray="5,5" className="data-flow" style={{animationDelay: '0.5s'}} />
+                    <line x1="128" y1="30" x2="162" y2="30" stroke="#f59e0b" strokeWidth="2" strokeDasharray="5,5" className="data-flow" style={{animationDelay: '1s'}} />
+                    
+                    {/* Labels */}
+                    <text x="20" y="50" textAnchor="middle" fontSize="8" fill="#92400e">Make</text>
+                    <text x="70" y="50" textAnchor="middle" fontSize="8" fill="#92400e">AI</text>
+                    <text x="120" y="50" textAnchor="middle" fontSize="8" fill="#92400e">Auto</text>
+                    <text x="170" y="50" textAnchor="middle" fontSize="8" fill="#92400e">Deploy</text>
+                </svg>
+            </div>
+        );
+
+        const PriceChartVisual = () => (
+            <div className="visual-element w-full h-24 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-3 mb-4 border border-blue-200">
+                <svg viewBox="0 0 200 60" className="w-full h-full">
+                    <defs>
+                        <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#3b82f6" />
+                            <stop offset="100%" stopColor="#06b6d4" />
+                        </linearGradient>
+                    </defs>
+                    
+                    {/* Chart bars */}
+                    <rect x="20" y="35" width="12" height="20" fill="url(#chartGradient)" className="chart-bar" style={{'--bar-height': '20px'}} />
+                    <rect x="40" y="25" width="12" height="30" fill="url(#chartGradient)" className="chart-bar" style={{'--bar-height': '30px', animationDelay: '0.2s'}} />
+                    <rect x="60" y="30" width="12" height="25" fill="url(#chartGradient)" className="chart-bar" style={{'--bar-height': '25px', animationDelay: '0.4s'}} />
+                    <rect x="80" y="20" width="12" height="35" fill="url(#chartGradient)" className="chart-bar" style={{'--bar-height': '35px', animationDelay: '0.6s'}} />
+                    <rect x="100" y="28" width="12" height="27" fill="url(#chartGradient)" className="chart-bar" style={{'--bar-height': '27px', animationDelay: '0.8s'}} />
+                    
+                    {/* Trend line */}
+                    <polyline points="26,45 46,35 66,42 86,27 106,41" fill="none" stroke="#1e40af" strokeWidth="2" strokeDasharray="3,3" />
+                    
+                    {/* Price indicators */}
+                    <text x="130" y="25" fontSize="10" fill="#1e40af" fontWeight="bold">€1.45</text>
+                    <text x="130" y="40" fontSize="10" fill="#1e40af" fontWeight="bold">€1.52</text>
+                    <text x="130" y="55" fontSize="10" fill="#1e40af" fontWeight="bold">€1.38</text>
+                </svg>
+            </div>
+        );
+
+        const StatisticsVisual = () => (
+            <div className="visual-element w-full h-24 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 mb-4 border border-purple-200">
+                <svg viewBox="0 0 200 60" className="w-full h-full">
+                    <defs>
+                        <linearGradient id="statsGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#8b5cf6" />
+                            <stop offset="100%" stopColor="#ec4899" />
+                        </linearGradient>
+                    </defs>
+                    
+                    {/* Scatter plot points */}
+                    <circle cx="30" cy="40" r="3" fill="#8b5cf6" opacity="0.8" />
+                    <circle cx="45" cy="25" r="3" fill="#8b5cf6" opacity="0.8" />
+                    <circle cx="60" cy="35" r="3" fill="#8b5cf6" opacity="0.8" />
+                    <circle cx="75" cy="20" r="3" fill="#8b5cf6" opacity="0.8" />
+                    <circle cx="90" cy="45" r="3" fill="#8b5cf6" opacity="0.8" />
+                    <circle cx="105" cy="30" r="3" fill="#8b5cf6" opacity="0.8" />
+                    <circle cx="120" cy="15" r="3" fill="#8b5cf6" opacity="0.8" />
+                    
+                    {/* Cluster circles */}
+                    <circle cx="50" cy="30" r="15" fill="none" stroke="#ec4899" strokeWidth="2" strokeDasharray="5,5" opacity="0.6" />
+                    <circle cx="100" cy="25" r="18" fill="none" stroke="#ec4899" strokeWidth="2" strokeDasharray="5,5" opacity="0.6" />
+                    
+                    {/* Labels */}
+                    <text x="150" y="20" fontSize="9" fill="#7c3aed">K-means</text>
+                    <text x="150" y="35" fontSize="9" fill="#7c3aed">Clustering</text>
+                    <text x="150" y="50" fontSize="9" fill="#7c3aed">Analysis</text>
+                </svg>
+            </div>
+        );
+
+        const ResearchVisual = () => (
+            <div className="visual-element w-full h-24 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 mb-4 border border-green-200">
+                <svg viewBox="0 0 200 60" className="w-full h-full">
+                    <defs>
+                        <linearGradient id="researchGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#10b981" />
+                            <stop offset="100%" stopColor="#059669" />
+                        </linearGradient>
+                    </defs>
+                    
+                    {/* Books stack */}
+                    <rect x="20" y="35" width="25" height="4" fill="#10b981" className="research-element" />
+                    <rect x="22" y="31" width="25" height="4" fill="#34d399" className="research-element" style={{animationDelay: '0.5s'}} />
+                    <rect x="24" y="27" width="25" height="4" fill="#6ee7b7" className="research-element" style={{animationDelay: '1s'}} />
+                    
+                    {/* Research graph */}
+                    <circle cx="70" cy="30" r="12" fill="none" stroke="#10b981" strokeWidth="2" />
+                    <path d="M 65 30 L 70 25 L 75 30" fill="none" stroke="#059669" strokeWidth="2" />
+                    <circle cx="70" cy="25" r="2" fill="#059669" />
+                    
+                    {/* Data points */}
+                    <circle cx="100" cy="20" r="2" fill="#10b981" className="research-element" />
+                    <circle cx="110" cy="35" r="2" fill="#10b981" className="research-element" style={{animationDelay: '0.3s'}} />
+                    <circle cx="120" cy="25" r="2" fill="#10b981" className="research-element" style={{animationDelay: '0.6s'}} />
+                    <circle cx="130" cy="40" r="2" fill="#10b981" className="research-element" style={{animationDelay: '0.9s'}} />
+                    
+                    {/* Connecting lines */}
+                    <line x1="100" y1="20" x2="110" y2="35" stroke="#34d399" strokeWidth="1" strokeDasharray="2,2" />
+                    <line x1="110" y1="35" x2="120" y2="25" stroke="#34d399" strokeWidth="1" strokeDasharray="2,2" />
+                    <line x1="120" y1="25" x2="130" y2="40" stroke="#34d399" strokeWidth="1" strokeDasharray="2,2" />
+                    
+                    {/* Academic symbols */}
+                    <text x="150" y="20" fontSize="12" fill="#059669">📊</text>
+                    <text x="165" y="20" fontSize="12" fill="#059669">📈</text>
+                    <text x="150" y="40" fontSize="12" fill="#059669">📚</text>
+                    <text x="165" y="40" fontSize="12" fill="#059669">🎓</text>
+                    
+                    {/* Labels */}
+                    <text x="100" y="55" textAnchor="middle" fontSize="8" fill="#065f46">ESS Research</text>
+                </svg>
+            </div>
+        );
+
+        const ScrapingVisual = () => (
+            <div className="visual-element w-full h-24 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-3 mb-4 border border-indigo-200">
+                <svg viewBox="0 0 200 60" className="w-full h-full">
+                    <defs>
+                        <linearGradient id="scrapingGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#4f46e5" />
+                            <stop offset="100%" stopColor="#3b82f6" />
+                        </linearGradient>
+                    </defs>
+                    
+                    {/* Web page representation */}
+                    <rect x="10" y="10" width="60" height="40" fill="none" stroke="#4f46e5" strokeWidth="2" rx="4" />
+                    <rect x="15" y="15" width="50" height="8" fill="#e0e7ff" />
+                    <rect x="15" y="28" width="30" height="4" fill="#c7d2fe" />
+                    <rect x="15" y="35" width="40" height="4" fill="#c7d2fe" />
+                    <rect x="15" y="42" width="25" height="4" fill="#c7d2fe" />
+                    
+                    {/* Arrow */}
+                    <path d="M 75 30 L 95 30 M 90 25 L 95 30 L 90 35" stroke="#4f46e5" strokeWidth="2" fill="none" />
+                    
+                    {/* Data extraction */}
+                    <rect x="105" y="15" width="80" height="30" fill="none" stroke="#3b82f6" strokeWidth="2" rx="4" />
+                    <rect x="110" y="20" width="15" height="3" fill="#3b82f6" />
+                    <rect x="130" y="20" width="20" height="3" fill="#3b82f6" />
+                    <rect x="155" y="20" width="25" height="3" fill="#3b82f6" />
+                    <rect x="110" y="27" width="25" height="3" fill="#60a5fa" />
+                    <rect x="140" y="27" width="15" height="3" fill="#60a5fa" />
+                    <rect x="160" y="27" width="18" height="3" fill="#60a5fa" />
+                    <rect x="110" y="34" width="20" height="3" fill="#93c5fd" />
+                    <rect x="135" y="34" width="30" height="3" fill="#93c5fd" />
+                    
+                    {/* Labels */}
+                    <text x="40" y="58" textAnchor="middle" fontSize="8" fill="#4338ca">HTML</text>
+                    <text x="145" y="58" textAnchor="middle" fontSize="8" fill="#2563eb">Structured Data</text>
+                </svg>
+            </div>
+        );
+
+        const DashboardVisual = () => (
+            <div className="visual-element w-full h-24 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-3 mb-4 border border-red-200">
+                <svg viewBox="0 0 200 60" className="w-full h-full">
+                    <defs>
+                        <linearGradient id="dashboardGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#ef4444" />
+                            <stop offset="100%" stopColor="#ec4899" />
+                        </linearGradient>
+                    </defs>
+                    
+                    {/* Dashboard layout */}
+                    <rect x="10" y="10" width="180" height="40" fill="none" stroke="#ef4444" strokeWidth="2" rx="4" />
+                    
+                    {/* KPI boxes */}
+                    <rect x="15" y="15" width="35" height="12" fill="#fef2f2" stroke="#fca5a5" strokeWidth="1" rx="2" />
+                    <rect x="55" y="15" width="35" height="12" fill="#fef2f2" stroke="#fca5a5" strokeWidth="1" rx="2" />
+                    <rect x="95" y="15" width="35" height="12" fill="#fef2f2" stroke="#fca5a5" strokeWidth="1" rx="2" />
+                    <rect x="135" y="15" width="50" height="12" fill="#fef2f2" stroke="#fca5a5" strokeWidth="1" rx="2" />
+                    
+                    {/* Chart area */}
+                    <rect x="15" y="32" width="80" height="15" fill="#fdf2f8" stroke="#f9a8d4" strokeWidth="1" rx="2" />
+                    
+                    {/* Mini chart */}
+                    <polyline points="20,42 30,38 40,44 50,36 60,40 70,35 80,39 90,37" fill="none" stroke="#ec4899" strokeWidth="2" />
+                    
+                    {/* Filter panel */}
+                    <rect x="100" y="32" width="85" height="15" fill="#fdf2f8" stroke="#f9a8d4" strokeWidth="1" rx="2" />
+                    
+                    {/* Filter elements */}
+                    <rect x="105" y="35" width="15" height="3" fill="#ec4899" />
+                    <rect x="125" y="35" width="20" height="3" fill="#f472b6" />
+                    <rect x="150" y="35" width="25" height="3" fill="#fbb6ce" />
+                    <rect x="105" y="41" width="25" height="3" fill="#ec4899" />
+                    <rect x="135" y="41" width="15" height="3" fill="#f472b6" />
+                    
+                    {/* Labels */}
+                    <text x="100" y="58" textAnchor="middle" fontSize="8" fill="#be185d">Power BI Dashboard</text>
+                </svg>
+            </div>
+        );
+
+        // Données des projets avec storytelling
+        const projectsData = [
+            {
+                id: 1,
+                title: "Hackathon - Malt, Mistral, Make",
+                subtitle: " Finaliste",
+                description: "Automatisation de la personnalisation des messages selon les clics sur des annonces avec IA générative.",
+                storytelling: {
+                    problematique: "Les entreprises perdent des prospects qualifiés car leurs messages marketing restent génériques et ne s'adaptent pas au comportement réel des utilisateurs sur leurs annonces.",
+                    projet: "Développer une solution d'automatisation complète qui personnalise les messages marketing en temps réel selon les interactions des utilisateurs avec les publicités.",
+                    actions: "J'ai conçu un workflow Make connecté à l'API Mistral AI pour analyser les clics et créer des prompts dynamiques. Intégration des données comportementales pour créer des messages contextualisés et automatiser l'envoi via les canaux appropriés.",
+                    resultats: "Solution finaliste du hackathon avec 85% d'amélioration du taux de conversion et réduction de 60% du temps de traitement manuel. Workflow entièrement automatisé et scalable."
+                },
+                technologies: ["Make", "Mistral AI", "NoCode", "Automation"],
+                icon: "fas fa-trophy",
+                color: "from-amber-500 to-orange-500",
+                tags: ["#NoCode", "#Automation", "#MistralAI", "#Make"],
+                visual: "workflow",
+                achievements: [
+                    "Finaliste du hackathon",
+                    "85% d'amélioration du taux de conversion",
+                    "Intégration API Mistral AI",
+                    "Workflow 100% automatisé"
+                ]
+            },
+            {
+                id: 2,
+                title: "Analyse des prix du carburant",
+                subtitle: "BigQuery & Looker Studio",
+                description: "Pipeline de données complète : extraction, transformation et visualisation des prix de carburant en temps réel.",
+                storytelling: {
+                    problematique: "Les consommateurs français n'ont pas accès à une vue d'ensemble des prix du carburant pour optimiser leurs déplacements et réduire leurs coûts.",
+                    projet: "Créer un système d'analyse des prix du carburant permettant aux utilisateurs de localiser facilement les stations les moins chères dans leur région.",
+                    actions: "J'ai développé un pipeline ETL complet : extraction et nettoyage de datasets CSV de +100k lignes, optimisation des requêtes SQL sur BigQuery, et création d'un dashboard interactif Looker Studio avec géolocalisation et filtres dynamiques.",
+                    resultats: "Dashboard interactif et un système de recommandations géolocalisées."
+                },
+                technologies: ["BigQuery", "SQL", "Looker Studio", "Data Visualization"],
+                icon: "fas fa-gas-pump",
+                color: "from-blue-500 to-cyan-500",
+                tags: ["#BigQuery", "#SQL", "#LookerStudio", "#DataViz"],
+                visual: "chart",
+                achievements: [
+                    "Traitement de +100k lignes de données",
+                    "Dashboard facile à utilisé",
+                    "Réduction des coûts carburant",
+                    "Géolocalisation en temps réel"
+                ]
+            },
+            {
+                id: 3,
+                title: "Analyse de la pauvreté avec R",
+                subtitle: "Statistiques avancées",
+                description: "Modélisation statistique avancée avec clustering K-means pour identifier les patterns de pauvreté.",
+                storytelling: {
+                    problematique: "Les indicateurs traditionnels de pauvreté ne révèlent pas les patterns cachés et les groupes homogènes dans les données socio-économiques complexes.",
+                    projet: "Développer un modèle statistique pour identifier et classifier les différents niveaux de pauvreté à partir de données socio-économiques multidimensionnelles.",
+                    actions: "J'ai appliqué des tests statistiques rigoureux (Bartlett, KMO) pour valider la qualité des données, implémenté des algorithmes de clustering K-means optimisés, et créé des visualisations R avancées pour interpréter les résultats.",
+                    resultats: "Identification de 4 clusters distincts de pauvreté avec 95% de précision, révélation de patterns inattendus dans la distribution géographique en fournissant des recommandations politiques."
+                },
+                technologies: ["R", "RStudio", "Statistiques"],
+                icon: "fas fa-chart-line",
+                color: "from-purple-500 to-pink-500",
+                tags: ["#R", "#Statistiques", "#Clustering", "#RStudio"],
+                visual: "statistics",
+                achievements: [
+                    "4 clusters identifiés avec 95% de précision",
+                    "Tests statistiques avancés validés",
+                    "Patterns géographiques révélés",
+                    "Recommandations politiques"
+                ]
+            },
+            {
+                id: 4,
+                title: "Mémoires de recherche",
+                subtitle: "Économie Sociale & Solidaire",
+                description: "Recherche académique sur l'impact socio-économique des organisations ESS et sécurité alimentaire.",
+                storytelling: {
+                    problematique: "L'impact réel des organisations d'économie sociale et solidaire sur le développement local reste mal quantifié, et les liens entre dépendance économique et sécurité alimentaire sont peu documentés.",
+                    projet: "Mener deux recherches académiques approfondies : l'une sur l'utilité sociale des organisations ESS, l'autre sur la relation entre dépendance économique et sécurité alimentaire dans les pays en développement.",
+                    actions: "J'ai développé une méthodologie de recherche rigoureuse combinant analyses qualitatives et quantitatives, conduit des entretiens avec plusieurs acteurs du secteur, analysé des données macro-économiques, et rédigé deux mémoires de plus de 120 pages chacun.",
+                    resultats: "Deux mémoires publiés avec mention bien."
+                },
+                technologies: ["Recherche", "Analyse qualitative", "Recherche", "Rédaction"],
+                icon: "fas fa-graduation-cap",
+                color: "from-green-500 to-emerald-500",
+                tags: ["#Recherche", "#ÉconomieSolidaire", "#SécuritéAlimentaire"],
+                visual: "research",
+                achievements: [
+                    "2 mémoires avec mention bien",
+                    "plusieurs entretiens menés",
+                ]
+            },
+            {
+                id: 5,
+                title: "Web Scraping Marmiton",
+                subtitle: "Python & Data Engineering",
+                description: "Pipeline d'extraction automatisée de données culinaires avec nettoyage et structuration avancée.",
+                storytelling: {
+                    problematique: "Les données nutritionnelles des recettes en ligne sont dispersées et non structurées, rendant impossible l'analyse nutritionnelle à grande échelle et les recommandations personnalisées.",
+                    projet: "Développer un système d'extraction automatisé pour collecter, nettoyer et structurer les données de milliers de recettes en vue d'analyses nutritionnelles avancées.",
+                    actions: "J'ai conçu un scraper Python robuste avec BeautifulSoup pour naviguer dans la structure HTML complexe de Marmiton, implémenté des algorithmes de nettoyage de données, et créé une base de données structurée avec classification automatique des ingrédients.",
+                    resultats: "Extraction réussie de +5000 recettes, base de données structurée utilisée pour un système de recommandations nutritionnelles, et réduction de 90% du temps de collecte manuelle."
+                },
+                technologies: ["Python", "BeautifulSoup", "Web Scraping", "Data Cleaning"],
+                icon: "fas fa-code",
+                color: "from-indigo-500 to-blue-500",
+                tags: ["#Python", "#WebScraping", "#BeautifulSoup", "#DataPrep"],
+                visual: "scraping",
+                achievements: [
+                    "Extraction de +5000 recettes",
+                    "100% de précision des données",
+                    "90% de réduction du temps de collecte",
+                    "Système de recommandations déployé"
+                ]
+            },
+            {
+                id: 6,
+                title: "Dashboard Ventes Power BI",
+                subtitle: "Business Intelligence",
+                description: "Tableau de bord interactif avec KPIs métier, analyses prédictives et filtres dynamiques avancés.",
+                storytelling: {
+                    problematique: "L'équipe commerciale manquait de visibilité en temps réel sur les performances de vente et ne pouvait pas identifier rapidement les tendances et opportunités par région et produit.",
+                    projet: "Créer un dashboard Power BI complet permettant l'analyse interactive des performances de vente avec des KPIs métier et des capacités d'analyse prédictive.",
+                    actions: "J'ai développé des visualisations interactives avec filtres dynamiques multi-niveaux, intégré des analyses de tendances temporelles, et créé des alertes automatiques pour les seuils critiques.",
+                    resultats: "Dashboard adopté par de l'équipe commerciale, amélioration de la réactivité aux tendances marché et identification des segments rentables."
+                },
+                technologies: ["Power BI", "Business Intelligence", "Data Modeling"],
+                icon: "fas fa-chart-bar",
+                color: "from-red-500 to-pink-500",
+                tags: ["#PowerBI", "#BusinessIntelligence", "#Ventes", "#Dashboard"],
+                visual: "dashboard",
+                achievements: [
+                    "Adoption par 100% de l'équipe",
+                    "Amélioration de la réactivité",
+                    "3 nouveaux segments identifiés",
+                ]
+            }
+        ];
+
+        // Fonction pour rendre le visuel approprié
+        const renderVisual = (visualType) => {
+            switch(visualType) {
+                case 'workflow':
+                    return <WorkflowVisual />;
+                case 'chart':
+                    return <PriceChartVisual />;
+                case 'statistics':
+                    return <StatisticsVisual />;
+                case 'research':
+                    return <ResearchVisual />;
+                case 'scraping':
+                    return <ScrapingVisual />;
+                case 'dashboard':
+                    return <DashboardVisual />;
+                default:
+                    return null;
+            }
+        };
+
+        // Composant Navbar
+        const Navbar = ({ activeSection, setActiveSection }) => {
+            const [isScrolled, setIsScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    setIsScrolled(window.scrollY > 50);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const scrollToSection = (sectionId) => {
+                setActiveSection(sectionId);
+                document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+            };
+
+            return (
+                <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+                    isScrolled ? 'glass-effect shadow-xl' : 'bg-transparent'
+                }`}>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center h-16">
+                            <div className="font-bold text-xl">
+                                <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                                    Achraf LIMEM
+                                </span>
+                                <span className="text-slate-600 text-sm ml-2 font-mono">/ Data Analyst</span>
+                            </div>
+                            <div className="hidden md:flex space-x-8">
+                                {['accueil', 'projets', 'contact'].map((item) => (
+                                    <button
+                                        key={item}
+                                        onClick={() => scrollToSection(item)}
+                                        className={`capitalize font-medium transition-all duration-300 px-4 py-2 rounded-lg ${
+                                            activeSection === item 
+                                                ? 'bg-blue-100 text-blue-700 font-semibold' 
+                                                : 'text-slate-700 hover:text-blue-600 hover:bg-slate-100'
+                                        }`}
+                                    >
+                                        {item}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            );
+        };
+
+        // Composant Hero/Accueil
+        const Hero = () => {
+            const [displayText, setDisplayText] = useState('');
+            const fullText = "Passionné par l'automatisation, l'analyse de données et les projets à impact.";
+
+            useEffect(() => {
+                let index = 0;
+                const timer = setInterval(() => {
+                    if (index < fullText.length) {
+                        setDisplayText(fullText.slice(0, index + 1));
+                        index++;
+                    } else {
+                        clearInterval(timer);
+                    }
+                }, 50);
+
+                return () => clearInterval(timer);
+            }, []);
+
+            return (
+                <section id="accueil" className="min-h-screen flex items-center justify-center data-gradient relative overflow-hidden">
+                    <div className="absolute inset-0 data-pattern opacity-30"></div>
+                    <div className="text-center text-white px-4 fade-in relative z-10">
+                        <div className="mb-6">
+                            <i className="fas fa-database text-6xl mb-4 opacity-80"></i>
+                        </div>
+                        <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-tight">
+                            Achraf LIMEM
+                        </h1>
+                        <h2 className="text-2xl md:text-3xl font-light mb-2 opacity-90">
+                            Marketing Data Analyst
+                        </h2>
+                        <div className="font-mono text-lg text-blue-200 mb-8">
+                            <i className="fas fa-chart-line mr-2"></i>
+                            Data Science • Machine Learning • Business Intelligence
+                        </div>
+                        <p className="text-lg md:text-xl max-w-4xl mx-auto leading-relaxed typing-animation mb-12">
+                            {displayText}
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button 
+                                onClick={() => document.getElementById('projets').scrollIntoView({ behavior: 'smooth' })}
+                                className="bg-white text-blue-700 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                            >
+                                <i className="fas fa-folder-open mr-2"></i>
+                                Découvrir mes projets
+                            </button>
+                            <button 
+                                onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
+                                className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-blue-700 transition-all duration-300"
+                            >
+                                <i className="fas fa-envelope mr-2"></i>
+                                Me contacter
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Composant ProjectCard
+        const ProjectCard = ({ project, onClick }) => {
+            return (
+                <div 
+                    className="project-card bg-white rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer border border-slate-200"
+                    onClick={() => onClick(project)}
+                >
+                    <div className="project-card-content p-6">
+                        <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${project.color} flex items-center justify-center mb-4 shadow-lg`}>
+                            <i className={`${project.icon} text-2xl text-white`}></i>
+                        </div>
+                        
+                        {/* Visuel spécifique au projet */}
+                        {project.visual && renderVisual(project.visual)}
+                        
+                        <h3 className="text-xl font-bold text-slate-800 mb-2 leading-tight">{project.title}</h3>
+                        <p className="text-blue-600 font-semibold mb-4 text-sm uppercase tracking-wide">{project.subtitle}</p>
+                        
+                        <div className="project-description">
+                            <p className="text-slate-600 mb-6 leading-relaxed text-sm">{project.description}</p>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-2 mt-auto">
+                            {project.tags.slice(0, 3).map((tag, index) => (
+                                <span 
+                                    key={index}
+                                    className="tag bg-slate-100 text-slate-700 px-3 py-1 rounded-lg text-xs font-medium border border-slate-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200"
+                                >
+                                    {tag}
+                                </span>
+                            ))}
+                            {project.tags.length > 3 && (
+                                <span className="text-slate-500 text-xs font-medium px-2 py-1">+{project.tags.length - 3}</span>
+                            )}
+                        </div>
+                        
+                        <div className="mt-4 pt-4 border-t border-slate-100">
+                            <span className="text-blue-600 text-sm font-medium">
+                                Cliquer pour plus de détails <i className="fas fa-arrow-right ml-1"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Composant ProjectModal avec storytelling
+        const ProjectModal = ({ project, isOpen, onClose }) => {
+            if (!isOpen || !project) return null;
+
+            return (
+                <div className="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto slide-up shadow-2xl">
+                        <div className="p-8 md:p-10">
+                            <div className="flex justify-between items-start mb-8">
+                                <div className="flex items-center">
+                                    <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${project.color} flex items-center justify-center mr-6 shadow-lg`}>
+                                        <i className={`${project.icon} text-3xl text-white`}></i>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-3xl font-bold text-slate-800 mb-2">{project.title}</h2>
+                                        <p className="text-xl text-blue-600 font-semibold uppercase tracking-wide">{project.subtitle}</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={onClose}
+                                    className="text-slate-400 hover:text-slate-600 text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
+                                >
+                                    ×
+                                </button>
+                            </div>
+
+                            {/* Visuel agrandi dans la modale */}
+                            {project.visual && (
+                                <div className="mb-8">
+                                    <div className="w-full h-32">
+                                        {renderVisual(project.visual)}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="section-divider mb-8"></div>
+
+                            {/* Storytelling structuré */}
+                            <div className="mb-8">
+                                <h3 className="text-2xl font-bold mb-6 text-slate-800">
+                                    <i className="fas fa-book-open mr-3 text-blue-600"></i>
+                                    Histoire du projet
+                                </h3>
+                                
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div className="storytelling-section bg-red-50 p-6 rounded-xl">
+                                        <h4 className="text-lg font-bold text-red-700 mb-3 flex items-center">
+                                            <i className="fas fa-exclamation-triangle mr-2"></i>
+                                            Problématique
+                                        </h4>
+                                        <p className="text-slate-700 leading-relaxed">{project.storytelling.problematique}</p>
+                                    </div>
+                                    
+                                    <div className="storytelling-section bg-blue-50 p-6 rounded-xl">
+                                        <h4 className="text-lg font-bold text-blue-700 mb-3 flex items-center">
+                                            <i className="fas fa-lightbulb mr-2"></i>
+                                            Projet
+                                        </h4>
+                                        <p className="text-slate-700 leading-relaxed">{project.storytelling.projet}</p>
+                                    </div>
+                                    
+                                    <div className="storytelling-section bg-purple-50 p-6 rounded-xl">
+                                        <h4 className="text-lg font-bold text-purple-700 mb-3 flex items-center">
+                                            <i className="fas fa-cogs mr-2"></i>
+                                            Mes actions
+                                        </h4>
+                                        <p className="text-slate-700 leading-relaxed">{project.storytelling.actions}</p>
+                                    </div>
+                                    
+                                    <div className="storytelling-section bg-green-50 p-6 rounded-xl">
+                                        <h4 className="text-lg font-bold text-green-700 mb-3 flex items-center">
+                                            <i className="fas fa-trophy mr-2"></i>
+                                            Résultats
+                                        </h4>
+                                        <p className="text-slate-700 leading-relaxed">{project.storytelling.resultats}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="section-divider mb-8"></div>
+
+                            <div className="mb-8">
+                                <h3 className="text-2xl font-bold mb-4 text-slate-800">
+                                    <i className="fas fa-cogs mr-3 text-blue-600"></i>
+                                    Technologies utilisées
+                                </h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {project.technologies.map((tech, index) => (
+                                        <div 
+                                            key={index}
+                                            className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-xl font-semibold text-center hover:from-blue-100 hover:to-indigo-100 transition-all duration-300"
+                                        >
+                                            {tech}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="mb-8">
+                                <h3 className="text-2xl font-bold mb-4 text-slate-800">
+                                    <i className="fas fa-medal mr-3 text-blue-600"></i>
+                                    Réalisations clés
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {project.achievements.map((achievement, index) => (
+                                        <div key={index} className="flex items-center p-4 bg-green-50 rounded-xl border border-green-200">
+                                            <i className="fas fa-check-circle text-green-600 mr-4 text-xl"></i>
+                                            <span className="text-slate-700 font-medium">{achievement}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="section-divider mb-6"></div>
+
+                            <div className="flex flex-wrap gap-3">
+                                {project.tags.map((tag, index) => (
+                                    <span 
+                                        key={index}
+                                        className="bg-slate-100 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-all duration-300"
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Composant Projects
+        const Projects = ({ onProjectClick }) => {
+            return (
+                <section id="projets" className="py-20 bg-white">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-2xl mb-6">
+                                <i className="fas fa-project-diagram text-2xl text-blue-600"></i>
+                            </div>
+                            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">Mes Projets</h2>
+                            <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                                Découvrez mes réalisations en <span className="font-semibold text-blue-600">data science</span>, 
+                                <span className="font-semibold text-blue-600"> automatisation</span> et 
+                                <span className="font-semibold text-blue-600"> business intelligence</span>
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {projectsData.map((project, index) => (
+                                <div key={project.id} className="slide-up" style={{animationDelay: `${index * 0.1}s`}}>
+                                    <ProjectCard project={project} onClick={onProjectClick} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Composant Contact
+        const Contact = () => {
+            return (
+                <section id="contact" className="py-20 data-gradient-light">
+                    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-6">
+                            <i className="fas fa-envelope text-2xl text-white"></i>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">Contact</h2>
+                        <p className="text-xl text-slate-600 mb-12 max-w-2xl mx-auto">
+                            Intéressé par mon profil ? N'hésitez pas à me contacter pour discuter de vos projets data !
+                        </p>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                            <a 
+                                href="mailto:achreflimem@gmail.com"
+                                className="group flex flex-col items-center p-8 bg-white rounded-2xl hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl border border-slate-200"
+                            >
+                                <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
+                                    <i className="fas fa-envelope text-2xl text-blue-600"></i>
+                                </div>
+                                <h3 className="font-bold text-slate-800 mb-2 text-lg">Email</h3>
+                                <p className="text-slate-600 font-mono text-sm">achreflimem@gmail.com</p>
+                            </a>
+                            
+                            <a 
+                                href="https://www.linkedin.com/in/achraf-limem/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex flex-col items-center p-8 bg-white rounded-2xl hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl border border-slate-200"
+                            >
+                                <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
+                                    <i className="fab fa-linkedin text-2xl text-blue-600"></i>
+                                </div>
+                                <h3 className="font-bold text-slate-800 mb-2 text-lg">LinkedIn</h3>
+                                <p className="text-slate-600 font-mono text-sm">achraf-limem</p>
+                            </a>
+                            
+                            <div className="group flex flex-col items-center p-8 bg-white rounded-2xl shadow-lg border border-slate-200">
+                                <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-4">
+                                    <i className="fas fa-download text-2xl text-blue-600"></i>
+                                </div>
+                                <h3 className="font-bold text-slate-800 mb-4 text-lg">CV</h3>
+                                <a 
+                                    href="cv.pdf" 
+                                    download="CV_Achraf_Limem.pdf"
+                                    className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+                                >
+                                    <i className="fas fa-file-pdf mr-2"></i>
+                                    Télécharger CV
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div className="section-divider mb-8"></div>
+                        
+                        <div className="text-center">
+                            <p className="text-slate-600 font-mono text-sm">
+                                © 2024 Achraf LIMEM - Portfolio Data & IA
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Composant principal Portfolio
+        const Portfolio = () => {
+            const [activeSection, setActiveSection] = useState('accueil');
+            const [selectedProject, setSelectedProject] = useState(null);
+            const [isModalOpen, setIsModalOpen] = useState(false);
+
+            const handleProjectClick = (project) => {
+                setSelectedProject(project);
+                setIsModalOpen(true);
+            };
+
+            const closeModal = () => {
+                setIsModalOpen(false);
+                setSelectedProject(null);
+            };
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    const sections = ['accueil', 'projets', 'contact'];
+                    const scrollPosition = window.scrollY + 100;
+
+                    for (const section of sections) {
+                        const element = document.getElementById(section);
+                        if (element) {
+                            const offsetTop = element.offsetTop;
+                            const offsetBottom = offsetTop + element.offsetHeight;
+
+                            if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
+                                setActiveSection(section);
+                                break;
+                            }
+                        }
+                    }
+                };
+
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return (
+                <div className="min-h-screen">
+                    <Navbar activeSection={activeSection} setActiveSection={setActiveSection} />
+                    <Hero />
+                    <Projects onProjectClick={handleProjectClick} />
+                    <Contact />
+                    <ProjectModal 
+                        project={selectedProject} 
+                        isOpen={isModalOpen} 
+                        onClose={closeModal} 
+                    />
+                </div>
+            );
+        };
+
+        // Rendu de l'application
+        ReactDOM.render(<Portfolio />, document.getElementById('root'));
+    </script>
+</body>
+</html>
